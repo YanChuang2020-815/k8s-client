@@ -1,6 +1,7 @@
 package com.k8s.k8sclient.k8s.controller;
 
 import com.k8s.k8sclient.k8s.model.device.EdgeDevice;
+import com.k8s.k8sclient.k8s.model.deviceModel.EdgeDeviceModel;
 import com.k8s.k8sclient.k8s.service.EdgeDeviceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +35,19 @@ public class EdgeDeviceController {
 
     @GetMapping("getAllEdgeDeviceModel")
     @ApiOperation("获取全部设备类型")
-    public Object getAllEdgeDeviceModel() {
+    public List<EdgeDeviceModel> getAllEdgeDeviceModel() {
         return edgeDeviceService.getAllDeviceModel();
+    }
+
+    @PostMapping("createEdgeDevice")
+    @ApiOperation("创建设备")
+    public void createEdgeDevice(@RequestBody EdgeDevice edgeDevice) {
+        edgeDeviceService.createEdgeDevice(edgeDevice);
+    }
+
+    @PostMapping("createEdgeDeviceModel")
+    @ApiOperation("创建设备模型")
+    public void createEdgeDeviceModel(@RequestBody EdgeDeviceModel edgeDeviceModel) {
+        edgeDeviceService.createEdgeDeviceModel(edgeDeviceModel);
     }
 }

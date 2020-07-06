@@ -1,6 +1,7 @@
 package com.k8s.k8sclient.k8s.service;
 
 import com.k8s.k8sclient.k8s.model.device.EdgeDevice;
+import com.k8s.k8sclient.k8s.model.deviceModel.EdgeDeviceModel;
 
 import java.util.List;
 
@@ -12,5 +13,9 @@ public interface EdgeDeviceService {
 
     List<EdgeDevice> getAllDevice();
 
-    Object getAllDeviceModel();
+    List<EdgeDeviceModel> getAllDeviceModel();
+
+    void createEdgeDeviceModel(EdgeDeviceModel edgeDeviceModel);
+
+    void createEdgeDevice(EdgeDevice edgeDevice);
 }
