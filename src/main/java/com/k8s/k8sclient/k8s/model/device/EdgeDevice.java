@@ -8,7 +8,7 @@ import lombok.Data;
  * Created by rongshuai on 2020/7/2 17:06
  */
 @Data
-public class Device extends CustomResource implements Namespaced {
+public class EdgeDevice extends CustomResource implements Namespaced {
     private static final long serialVersionUID = 7828260264410099956L;
 
     private DeviceSpec spec;

@@ -1,13 +1,9 @@
 package com.k8s.k8sclient.k8s.service.impl;
 
-
-import com.k8s.k8sclient.k8s.crd.DoneableDummy;
-import com.k8s.k8sclient.k8s.crd.Dummy;
-import com.k8s.k8sclient.k8s.crd.DummyList;
-import com.k8s.k8sclient.k8s.model.device.Device;
+import com.k8s.k8sclient.k8s.model.device.EdgeDevice;
 import com.k8s.k8sclient.k8s.model.device.DeviceList;
 import com.k8s.k8sclient.k8s.model.device.DoneableDevice;
-import com.k8s.k8sclient.k8s.service.DeviceService;
+import com.k8s.k8sclient.k8s.service.EdgeDeviceService;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionList;
@@ -15,7 +11,6 @@ import io.fabric8.kubernetes.client.CustomResourceList;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.Watcher;
-import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +23,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-public class DeviceServiceImpl implements DeviceService {
+public class EdgeDeviceServiceImpl implements EdgeDeviceService {
 
     @Autowired
     private KubernetesClient k8sClient;
@@ -37,7 +32,7 @@ public class DeviceServiceImpl implements DeviceService {
     public static String DEVICE_CRD_NAME = "devices." +  DEVICE_CRD_GROUP;
 
     @Override
-    public void watchDeviceStatus(Device device) {
+    public void watchDeviceStatus(EdgeDevice edgeDevice) {
         CustomResourceDefinitionList crds = k8sClient.customResourceDefinitions().list();
         List<CustomResourceDefinition> crdsItems = crds.getItems();
         System.out.println("Found " + crdsItems.size() + " CRD(s)");
@@ -53,15 +48,15 @@ public class DeviceServiceImpl implements DeviceService {
             }
         }
 
-        NonNamespaceOperation<Device, DeviceList, DoneableDevice, Resource<Device, DoneableDevice>> deviceClient =
-                k8sClient.customResources(deviceCRD, Device.class, DeviceList.class, DoneableDevice.class);
+        NonNamespaceOperation<EdgeDevice, DeviceList, DoneableDevice, Resource<EdgeDevice, DoneableDevice>> deviceClient =
+                k8sClient.customResources(deviceCRD, EdgeDevice.class, DeviceList.class, DoneableDevice.class);
 
-//        Device created = new Device();
+//        EdgeDevice created = new EdgeDevice();
 //        ObjectMeta metadata = new ObjectMeta();
 //        metadata.setName();
-        deviceClient.withResourceVersion(device.getMetadata().getResourceVersion()).watch(new Watcher<Device>() {
+        deviceClient.withResourceVersion(edgeDevice.getMetadata().getResourceVersion()).watch(new Watcher<EdgeDevice>() {
             @Override
-            public void eventReceived(Action action, Device resource) {
+            public void eventReceived(Action action, EdgeDevice resource) {
                 System.out.println("==> " + action + " for " + resource);
                 if (resource.getSpec() == null) {
                     log.error("No Spec for resource " + resource);
@@ -76,7 +71,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public List<Device> getAllDevice() {
+    public List<EdgeDevice> getAllDevice() {
         CustomResourceDefinitionList crds = k8sClient.customResourceDefinitions().list();
         List<CustomResourceDefinition> crdsItems = crds.getItems();
         System.out.println("Found " + crdsItems.size() + " CRD(s)");
@@ -91,10 +86,10 @@ public class DeviceServiceImpl implements DeviceService {
                 }
             }
         }
-        NonNamespaceOperation<Device, DeviceList, DoneableDevice, Resource<Device, DoneableDevice>> deviceClient =
-                k8sClient.customResources(deviceCRD, Device.class, DeviceList.class, DoneableDevice.class);
-        CustomResourceList<Device> deviceList = deviceClient.list();
-        List<Device> items = deviceList.getItems();
+        NonNamespaceOperation<EdgeDevice, DeviceList, DoneableDevice, Resource<EdgeDevice, DoneableDevice>> deviceClient =
+                k8sClient.customResources(deviceCRD, EdgeDevice.class, DeviceList.class, DoneableDevice.class);
+        CustomResourceList<EdgeDevice> deviceList = deviceClient.list();
+        List<EdgeDevice> items = deviceList.getItems();
         return items;
     }
 }
