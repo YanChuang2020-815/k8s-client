@@ -11,4 +11,6 @@ public interface EdgeDeviceService {
     void watchDeviceStatus(EdgeDevice edgeDevice);
 
     List<EdgeDevice> getAllDevice();
+
+    Object getAllDeviceModel();
 }

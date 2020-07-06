@@ -3,6 +3,9 @@ package com.k8s.k8sclient.k8s.service.impl;
 import com.k8s.k8sclient.k8s.model.device.EdgeDevice;
 import com.k8s.k8sclient.k8s.model.device.DeviceList;
 import com.k8s.k8sclient.k8s.model.device.DoneableDevice;
+import com.k8s.k8sclient.k8s.model.deviceModel.DeviceModelList;
+import com.k8s.k8sclient.k8s.model.deviceModel.DoneableDeviceModel;
+import com.k8s.k8sclient.k8s.model.deviceModel.EdgeDeviceModel;
 import com.k8s.k8sclient.k8s.service.EdgeDeviceService;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
@@ -30,6 +33,7 @@ public class EdgeDeviceServiceImpl implements EdgeDeviceService {
 
     public static String DEVICE_CRD_GROUP = "devices.kubeedge.io";
     public static String DEVICE_CRD_NAME = "devices." +  DEVICE_CRD_GROUP;
+    public static String DEVICE_MODEL_CRD_NAME = "devicemodels." + DEVICE_CRD_GROUP;
 
     @Override
     public void watchDeviceStatus(EdgeDevice edgeDevice) {
@@ -51,9 +55,6 @@ public class EdgeDeviceServiceImpl implements EdgeDeviceService {
         NonNamespaceOperation<EdgeDevice, DeviceList, DoneableDevice, Resource<EdgeDevice, DoneableDevice>> deviceClient =
                 k8sClient.customResources(deviceCRD, EdgeDevice.class, DeviceList.class, DoneableDevice.class);
 
-//        EdgeDevice created = new EdgeDevice();
-//        ObjectMeta metadata = new ObjectMeta();
-//        metadata.setName();
         deviceClient.withResourceVersion(edgeDevice.getMetadata().getResourceVersion()).watch(new Watcher<EdgeDevice>() {
             @Override
             public void eventReceived(Action action, EdgeDevice resource) {
@@ -89,7 +90,28 @@ public class EdgeDeviceServiceImpl implements EdgeDeviceService {
         NonNamespaceOperation<EdgeDevice, DeviceList, DoneableDevice, Resource<EdgeDevice, DoneableDevice>> deviceClient =
                 k8sClient.customResources(deviceCRD, EdgeDevice.class, DeviceList.class, DoneableDevice.class);
         CustomResourceList<EdgeDevice> deviceList = deviceClient.list();
-        List<EdgeDevice> items = deviceList.getItems();
-        return items;
+        return deviceList.getItems();
+    }
+
+    @Override
+    public List<EdgeDeviceModel> getAllDeviceModel() {
+        CustomResourceDefinitionList crds = k8sClient.customResourceDefinitions().list();
+        List<CustomResourceDefinition> crdsItems = crds.getItems();
+        System.out.println("Found " + crdsItems.size() + " CRD(s)");
+        CustomResourceDefinition deviceModelCRD = null;
+        for (CustomResourceDefinition crd : crdsItems) {
+            ObjectMeta metadata = crd.getMetadata();
+            if (metadata != null) {
+                String name = metadata.getName();
+                System.out.println("    " + name + " => " + metadata.getSelfLink());
+                if (DEVICE_MODEL_CRD_NAME.equals(name)) {
+                    deviceModelCRD = crd;
+                }
+            }
+        }
+        NonNamespaceOperation<EdgeDeviceModel, DeviceModelList, DoneableDeviceModel, Resource<EdgeDeviceModel, DoneableDeviceModel>> deviceModelClient =
+                k8sClient.customResources(deviceModelCRD, EdgeDeviceModel.class, DeviceModelList.class, DoneableDeviceModel.class);
+        CustomResourceList<EdgeDeviceModel> deviceModelList = deviceModelClient.list();
+        return deviceModelList.getItems();
     }
 }

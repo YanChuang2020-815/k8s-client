@@ -31,4 +31,10 @@ public class EdgeDeviceController {
     public void watchDevice(@RequestBody EdgeDevice edgeDevice) {
         edgeDeviceService.watchDeviceStatus(edgeDevice);
     }
+
+    @GetMapping("getAllEdgeDeviceModel")
+    @ApiOperation("获取全部设备类型")
+    public Object getAllEdgeDeviceModel() {
+        return edgeDeviceService.getAllDeviceModel();
+    }
 }
