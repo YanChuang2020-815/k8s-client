@@ -11,6 +11,8 @@ import java.util.List;
 public interface EdgeDeviceService {
     void watchDeviceStatus(EdgeDevice edgeDevice);
 
+    void watchResourceStatus();
+
     List<EdgeDevice> getAllDevice();
 
     List<EdgeDeviceModel> getAllDeviceModel();

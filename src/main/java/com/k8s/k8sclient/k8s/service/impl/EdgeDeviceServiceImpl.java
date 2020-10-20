@@ -7,13 +7,11 @@ import com.k8s.k8sclient.k8s.model.deviceModel.DeviceModelList;
 import com.k8s.k8sclient.k8s.model.deviceModel.DoneableDeviceModel;
 import com.k8s.k8sclient.k8s.model.deviceModel.EdgeDeviceModel;
 import com.k8s.k8sclient.k8s.service.EdgeDeviceService;
+import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.client.CustomResourceList;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.Watcher;
+import io.fabric8.kubernetes.client.*;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,23 @@ public class EdgeDeviceServiceImpl implements EdgeDeviceService {
     @Autowired
     private NonNamespaceOperation<EdgeDeviceModel, DeviceModelList, DoneableDeviceModel, Resource<EdgeDeviceModel, DoneableDeviceModel>> deviceModelClient;
 
+    @Override
+    public void watchResourceStatus() {
+        Watch watch = k8sClient.nodes().watch(new Watcher<Node>() {
+            @Override
+            public void eventReceived(Action action, Node node) {
+                System.out.println("==> " + action + " for " + node.getStatus());
+                if (node.getSpec() == null) {
+                    log.error("No Spec for resource " + node);
+                }
+            }
+
+            @Override
+            public void onClose(KubernetesClientException e) {
+
+            }
+        });
+    }
 
     @Override
     public void watchDeviceStatus(EdgeDevice edgeDevice) {

@@ -50,4 +50,10 @@ public class EdgeDeviceController {
     public void createEdgeDeviceModel(@RequestBody EdgeDeviceModel edgeDeviceModel) {
         edgeDeviceService.createEdgeDeviceModel(edgeDeviceModel);
     }
+
+    @GetMapping("watchNode")
+    @ApiOperation( "监听节点状态")
+    public void watchDevice() {
+        edgeDeviceService.watchResourceStatus();
+    }
 }
